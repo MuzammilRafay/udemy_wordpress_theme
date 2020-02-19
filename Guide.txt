@@ -1,0 +1,828 @@
+
+
+every thing in function hooks first register then enqueue
+
+https://codex.wordpress.org/Function_Reference/register_sidebar
+
+
+for creating unique id for search form
+
+<?php $unique_id = esc_attr( uniqid( 'search-form-' ) ); ?>
+id="<?php echo $unique_id; ?>"
+searchform
+
+
+
+__()return translate string
+_e()echo out the translated string rather that running it.
+
+
+http://codex.wordpress.org/Template_Tags
+
+have_posts loop all detail in upper link what is template tags is used
+
+https://codex.wordpress.org/Pagination
+
+
+https://codex.wordpress.org/Theme_Development#Single_Post_.28single.php.29
+
+this is important link when we developing the theme each page have own functionallity like wp_link_pages wordpress reccomented to use in single.php accepet other i think yrr
+
+
+comments_form in comments.php
+
+wordpress pass the comments varibale just loop through that
+echo get_avatar($comment,60); //$comment is loop singular value
+for comment form
+
+<?php 
+            comment_form(array(
+                'comment_field' => '<div class="col_full">
+                            <label for="comment">'.__('Comment','udemy').'</label>
+                            <textarea name="comment" cols="58" rows="7" tabindex="4" class="sm-form-control"></textarea>
+                        </div>',
+                'fields' => array(
+                    'author' => '<div class="col_one_third">
+                            <label for="author">'.__('Name','udemy').'</label>
+                            <input type="text" name="author" id="author" value="" size="22" tabindex="1" class="sm-form-control" />
+                        </div>',
+                    'email' => '<div class="col_one_third">
+                            <label for="email">'.__('Email','udemy').'</label>
+                            <input type="text" name="email" id="email" value="" size="22" tabindex="2" class="sm-form-control" />
+                        </div>',
+                    'url' => '<div class="col_one_third col_last">
+                            <label for="url">'.__('Website','udemy').'</label>
+                            <input type="text" name="url" id="url" value="" size="22" tabindex="3" class="sm-form-control" />
+                        </div>',
+                    'class_submit' => 'button button-3d nomargin',
+                    'label_submit' => __('Submit Comment','udemy'),
+                    'title_reply' => __('Leave a <span>Comment</span>','udemy')
+                )
+            ));W
+        ?>
+
+
+        use this function 
+
+
+
+Page.php page template
+
+for subtitle in page.php we usee wp subtitle plugin for that now you createe the page subtitle field display
+
+
+<?php
+
+get_header();
+
+while( have_posts() ){
+    the_post();
+    ?>
+    <!-- Page Title
+    ============================================= -->
+    <section id="page-title">
+        <div class="container clearfix">
+            <h1><?php the_title(); ?></h1>
+            <?php
+
+            if( function_exists( 'the_subtitle' ) ){
+                ?><span><?php the_subtitle(); ?></span><?php
+            }
+
+            ?>
+        </div>
+    </section><!-- #page-title end -->
+    <?php
+}
+
+rewind_posts();
+
+?>
+
+page.php work like all pages accept index.php
+
+get_search_form for searchform.php
+
+
+
+
+
+category.php
+only defferencce between category and index it will display category heading okkay
+basicly its category detail page
+
+
+<?php the_archive_title(); ?> category title
+
+get_template_part( 'partials/post/content-excerpt'); for future ccustomization because in category and index its same
+
+
+
+when you serach some thing it will return you in to search form okky
+
+and title get_search_query
+
+then normally we use the content which printing in many places like index category okkay just while post loop and print post previous_posts_link next_post_link just only thing are required.
+
+
+some pages required sidebar or somoe not so how to do this in wordpress??
+
+create the file full-width.php you can choose custom template name what ever you want.
+we just put the get_search_form
+
+
+/*
+ * Template Name: Full Width Page
+ */
+
+get_header();
+
+template name print just like that okkay.
+
+when you create the page it will show you template in page attribute secction
+just select full-width and you good to go
+
+more template for posts read page template handbook
+
+
+full-width.php
+full-width-post.php // just use comment template name and change that like remove sidebar
+
+wp_title funcction in header file old way create theme support function for 
+title and logo.
+add_theme_support( 'title-tag' );
+add_theme_support( 'custom-logo' );
+
+
+title update automattically dont need to title tag in header
+
+<div id="logo">
+                <?php if (has_custom_logo(  )): ?>
+                    <?php the_custom_logo( ); ?>
+                <?php else: ?>
+                    <a href="<?php echo home_url('/'); ?>" class="standard-logo"><?php bloginfo('name'); ?></a>
+                <?php endif ?>
+            </div><!-- #logo end -->
+
+
+
+register_nav_menu( 
+        'secondary',
+         __('Secondary Menu','udemy') 
+    );
+
+    in action hook after_setup_theme register then you can use
+
+if( has_nav_menu( 'secondary' ) ){
+                        wp_nav_menu(array(
+                            'theme_location'            =>  'secondary',
+                            'container'                 =>  false,
+                            'fallback_cb'               =>  false,
+                            'depth'                     =>  1
+                        ));
+                    }
+
+
+
+wp_quads 
+advvertisment plugin 
+
+
+working with customizing functionaliity just add customize_register acction hook
+
+
+
+function ju_customize_register($wp_customizer){
+    $wp_customizer->add_setting('ju_facebook_handle',array(
+        'default' => '',
+        'transport' => 'refresh'
+    ));
+
+    $wp_customizer->add_section('ju_social_section',array(
+        'title' => __('Udemy Social Settings','udemy'),
+        'priority' =>30
+    ));
+
+    $wp_customizer->add_control(
+        new WP_Customize_Control($wp_customizer,
+            'ju_social_facebook_input',
+            array(
+                'label'          => __( 'Dark or light theme version?', 'theme_name' ),
+                'section'        => 'ju_social_section',
+                'settings'       => 'ju_facebook_handle',
+                'type'           => 'text'
+            )
+        )
+    );
+}
+
+add_action('customize_register','ju_customize_register');
+
+
+
+
+<?php if (get_theme_mod('ju_facebook_handle')): ?>
+    <a href="<?php echo get_theme_mod('ju_facebook_handle'); ?>  " >
+<?php endif ?>
+
+repeat 20 class is important wp_query class
+
+
+
+
+
+
+
+
+
+
+if  we want to edit custom customizer that is allowed in wordpress.
+panels->section->control
+follow this patternn
+
+//title tag line is the id of site identy we look that var_dump customizer
+$wp_customizer->get_section('title_tagline')->title = 'Udemy General';
+$wp_customizer->get_panel('id_for_panel')->value = 'Udemy you want';
+$wp_customizer->get_setting('id_for_setting')->value = 'Value  you want';
+
+by default settings are set to transport => refersh it will refersh the page
+if you want to change setting with javascript just set transport => 'postMessage' like
+
+$wp_customizer->add_setting('ju_header_show_search',array(
+        'default' => 'yes',
+        'transport' => 'postMessage'
+    ));
+
+then we need to load the jquery
+
+/**
+ * Created by test on 3/27/2017.
+ */
+ //since  the wp file  loaded we can access the wp object
+(function($){
+    wp.customize( 'ju_header_show_search', function(value){
+        value.bind(function(new_val){
+            if( new_val ){
+                $("#top-search").show();
+            }else{
+                $("#top-search").hide();
+            }
+        });
+    });
+
+    wp.customize( 'ju_header_show_cart', function(value){
+        value.bind(function(new_val){
+            if( new_val ){
+                $("#top-cart").show();
+            }else{
+                $("#top-cart").hide();
+            }
+        });
+    });
+})(jQuery);
+
+
+add_theme_support( 'starter-content', $starter_content );
+    // starter content allow you to genreate dummy content for customization 
+    // to simulate a fresh site.you can change the fresh_site value to 1 from wp_option database table
+
+
+post formates
+developer.wordpress.org/themes/functionaliy/post-formats
+either  is video audio okkay
+
+wordpress popolar post plugin 
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------woww plugin development is started-----------------
+we need index.php file for creating plllugin this is minimum requirement
+
+
+
+
+add_filter( 'the_title' ,'ju_title');
+function ju_title($title){
+    return 'Hooked: '.$title;
+}
+
+add_action('wp_footer','ju_footer_shoutout');
+
+function ju_footer_shoutout(){
+    echo 'Hooked Example Plugin was here.';
+}
+
+
+
+Filter Hooks/functions are always pass in something to filter and are always expeccted to return something.you are allowed to return false;
+
+
+Action Hooks/Functions can do anything behind the scenes.you dont have to output or return anything.you can run sql query or send out an email.anything goes..
+
+
+by  default function priority is 10 but if you want to change feel free to change soo you can control before after runing functions
+
+
+how to create custom hook in the example below:
+you can create custom hook from do_action function then call add_action as you used that before.
+
+
+add_action('wp_footer','ju_footer');
+
+function ju_footer(){
+    do_action('ju_custom_footer');
+}
+
+add_action('ju_custom_footer','ju_kill_wp');
+
+function ju_kill_wp(){
+    echo 'Custom Hooks';
+}
+
+
+as like do_action for action we can use custom filter hook by usuing apply_filter function
+
+
+
+https://wordpress.org/support/article/post-types/
+https://codex.wordpress.org/Function_Reference/register_post_type 
+
+
+
+new translation function in when we create register_post_type
+dont do just help full for translation
+
+
+for create custom post type define like
+
+
+
+function recipe_init(){
+    $labels = array(
+        'name'               => __( 'Recipes', 'recipe' ),
+        'singular_name'      => __( 'Recipe', 'recipe' ),
+        'menu_name'          => __( 'Recipes', 'recipe' ),
+        'name_admin_bar'     => __( 'Recipe', 'recipe' ),
+        'add_new'            => __( 'Add New', 'recipe' ),
+        'add_new_item'       => __( 'Add New Recipe', 'recipe' ),
+        'new_item'           => __( 'New Recipe', 'recipe' ),
+        'edit_item'          => __( 'Edit Recipe', 'recipe' ),
+        'view_item'          => __( 'View Recipe', 'recipe' ),
+        'all_items'          => __( 'All Recipes', 'recipe' ),
+        'search_items'       => __( 'Search Recipes', 'recipe' ),
+        'parent_item_colon'  => __( 'Parent Recipes:', 'recipe' ),
+        'not_found'          => __( 'No Recipes found.', 'recipe' ),
+        'not_found_in_trash' => __( 'No Recipes found in Trash.', 'recipe' )
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'description'        => __( 'A custom post type for recipes.', 'recipe' ),
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array( 'slug' => 'recipe' ),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => 20,
+        'supports'           => array( 'title', 'editor', 'author', 'thumbnail' ),
+        'taxonomies'         => array('category','post_tag')
+    );
+
+    register_post_type( 'recipe', $args );
+}
+
+add_action('init','recipe_init');
+
+now we have created custom post type of recipes
+
+metadata api 
+
+https://codex.wordpress.org/Metadata_API
+
+meta data is just pieces of information related to a post,page or user.
+on its own.its not very useful.metadata has to be connected something.
+
+by using metadata api we  free our selve having to create table and managing it db.
+
+when you create recipe you see that categories drag drop soo thats called meta boxes
+
+
+
+
+
+
+/*================================
+=            META BOX            =
+================================*/
+/*
+it will attache this field data in to this custom post type
+custom post type name okkay recipe is 
+add_meta_boxes_{$post_type}
+*/
+add_action('admin_init','recipe_admin_init');
+function recipe_admin_init()
+{
+    add_action('add_meta_boxes_recipe','r_create_metaboxes');
+}
+
+
+function r_create_metaboxes(){
+    add_meta_box(
+        'r_recipe_options_mb',
+        __('Recipe Options','recipe'),
+        'r_recipe_options_mb', //callback function
+        'recipe', //custom post type define
+        'normal',
+        'high'
+     );
+}
+
+function r_recipe_options_mb($post){
+    $recipe_data = get_post_meta(
+    $post->ID,
+    'recipe_data',
+    true //true means return single value
+    ); // i  will create this key for updating in save-post.php fiel
+
+    if(empty($recipe_data)){
+        $recipe_data = array(
+            'ingredients' => '',
+            'time' => '',
+            'untensils' => '',
+            'levels' => 'Beginner',
+            'meal_type' => ''
+        );
+    }
+    ?> 
+    <div class="form-group">
+    <label>Ingredients</label>
+    <input type="text" class="form-control" name="r_inputIngredients" value="<?php echo $recipe_data['ingredients'] ?>">
+    </div>
+    <div class="form-group">
+        <label>Cooking Time Required</label>
+        <input type="text" class="form-control" name="r_inputTime" value="<?php echo $recipe_data['time'] ?> ">
+    </div>
+    <div class="form-group">
+        <label>Utensils</label>
+        <input type="text" class="form-control" name="r_inputUtensils" value="<?php echo $recipe_data['untensils'] ?> ">
+    </div>
+    <div class="form-group">
+        <label>Cooking Experience</label>
+        <select class="form-control" name="r_inputLevel">
+            <option value="Beginner" <?php echo $recipe_data['levels'] == "Beginner" ? "SELECTED" : ""; ?>>Beginner</option>
+            <option value="Intermediate" <?php echo $recipe_data['levels'] == "Intermediate" ? "SELECTED" : ""; ?>>Intermediate</option>
+            <option value="Expert" <?php echo $recipe_data['levels'] == "Expert" ? "SELECTED" : ""; ?>>Expert</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Meal Type</label>
+        <input type="text" class="form-control" name="r_inputMealType" value="<?php echo $recipe_data['meal_type'] ?> ">
+    </div>
+    <?php
+}
+
+
+/*=====  End of META BOX  ======*/
+
+/*===================================================
+=            Mete Data Save Post Process            =
+===================================================*/
+
+!!!!!!!!!!!!!!!!!!!IMPORTANT THING!!!!!!!!!!!!!!!!!!!!!!
+
+add_action(
+    'save_post_recipe',
+    'r_save_post_admin',
+    10, //priority
+    3 //by default is 1
+);
+
+function r_save_post_admin($post_id,$post,$update){
+    if(!$update) {
+        //so i know that is new post
+        return;
+    }
+    // how to check the array
+    /*
+    echo '<pre>';
+    print_r($_POST);
+    echo '</pre>';
+    die();
+    */
+
+    // https://codex.wordpress.org/Validating_Sanitizing_and_Escaping_User_Data
+    //see wp-includes/formatting file see all function of sanitize_text_field   $recipe_data = array();
+    $recipe_data = array();
+    $recipe_data['ingredients'] = sanitize_text_field( $_POST['r_inputIngredients'] );
+    $recipe_data['time'] = sanitize_text_field( $_POST['r_inputTime'] );
+    $recipe_data['untensils'] = sanitize_text_field( $_POST['r_inputUtensils'] );
+    $recipe_data['levels'] = sanitize_text_field( $_POST['r_inputLevel'] );
+    $recipe_data['meal_type'] = sanitize_text_field( $_POST['r_inputMealType'] );
+    $recipe_data['rating'] = 0;
+    $recipe_data['rating_count'] = 0;
+    //update method check if   data already exist if it doesnt it will creaate that
+    update_post_meta($post_id,'recipe_data',$recipe_data);
+}
+
+//save post hook trigger when every post is save okkay
+// https://developer.wordpress.org/reference/hooks/save_post/
+// so we use save_post_{post_type}
+
+
+
+/*=====  End of Mete Data Save Post Process  ======*/
+
+
+load styles in plugin
+
+function r_admin_enqueue(){
+    wp_register_style(
+        'ju_bootstrap',
+        plugins_url(
+            '/assets/styles/bootstrap.css',
+            RECIPE_PLUGIN_URL // i have created the constant variable for this.
+        )
+    );
+    wp_enqueue_style('ju_bootstrap');
+}
+add_action('admin_enqueue_scripts','r_admin_enqueue');
+
+
+i18N means internationlization the name comes from the first and last letters of internationlization with 18 being the number of letters between these 2 letters.
+
+
+
+filter hook pass some thing and return something okkay
+
+
+
+add_filter('the_content','r_filter_recipe_content');
+
+function r_filter_recipe_content($content){
+    // check is its single post
+    if(!is_singular('recipe')){
+        return $content;
+    }
+    global $post; //wordpress provide automattically $post variable
+
+    $recipe_html = file_get_contents('recipe-template.php',true); 
+    //working like include function now
+    $recipe_data = get_post_meta($post->ID,'recipe_data',true);
+
+    $recipe_html = str_replace('INGREDIENTS_PH', $recipe_data['ingredients'],$recipe_html);
+    $recipe_html = str_replace('COOKING_TIME_PH', $recipe_data['time'],$recipe_html);
+    $recipe_html = str_replace('UTENSILS_PH', $recipe_data['untensils'],$recipe_html);
+    $recipe_html = str_replace('LEVEL_PH', $recipe_data['levels'],$recipe_html);
+    $recipe_html = str_replace('TYPE_PH', $recipe_data['meal_type'],$recipe_html);
+
+
+    $recipe_html = str_replace('INGREDIENTS_I18N', 'Ingredients',$recipe_html);
+    $recipe_html = str_replace('COOKING_TIME_I18N', 'Cooking Time',$recipe_html);
+    $recipe_html = str_replace('UTENSILS_I18N', 'Utensils',$recipe_html);
+    $recipe_html = str_replace('LEVEL_I18N', 'Level',$recipe_html);
+    $recipe_html = str_replace('TYPE_I18N', 'Meal Type',$recipe_html);
+
+    
+    return $recipe_html . $content;
+}
+
+in recipe-template.php file look like just text which is replacing in upper side
+
+<ul class="list-unstyled">
+    <li><strong>INGREDIENTS_I18N: </strong> INGREDIENTS_PH</li>
+    <li><strong>COOKING_TIME_I18N: </strong> COOKING_TIME_PH</li>
+    <li><strong>UTENSILS_I18N: </strong> UTENSILS_PH</li>
+    <li><strong>LEVEL_I18N: </strong> LEVEL_PH</li>
+    <li><strong>TYPE_I18N: </strong> TYPE_PH</li>
+    <li>
+        <strong>RATE_I18N: </strong>
+        <div 
+        id="recipe_rating" 
+        class="rateit" 
+        data-rateit-resetable="false" 
+        data-rid="RECIPE_ID"
+        ></div>
+    </li>
+    <!-- ph stand for place holder -->
+</ul>
+
+I18N I for Internalization SHORT FORM IS IN BETWEEN IS 18 I18N
+I18N term for translations.
+
+in activation hook
+
+
+/*============================================================
+=            Create Database Table With Heidi Sql            =
+============================================================*/
+
+register_activation_hook(__FILE__,'r_activate_plugin');
+
+function r_activate_plugin(){
+    if (version_compare(get_bloginfo('version'),'4.5','<')) {
+        wp_die(__('you must update wordpress to use this plugin','recipe'));
+    }
+    global $wpdb; //this object created by wordpress for you
+    $createSql = "CREATE TABLE `".$wpdb->prefix."recipe_ratings` (
+                        `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
+                        `recipe_id` BIGINT(20) NULL DEFAULT NULL,
+                        `rating_id` FLOAT(3,2) NULL DEFAULT NULL,
+                        `user_ip` VARCHAR(50) NULL DEFAULT NULL,
+                        PRIMARY KEY (`ID`)
+                    )
+                    ENGINE=InnoDB ".$wpdb->get_charset_collate()." AUTO_INCREMENT=1;";
+
+    require_once(ABSPATH.'/wp-admin/includes/upgrade.php');
+    dbDelta($createSql);
+    // https://developer.wordpress.org/reference/functions/dbdelta/
+}
+
+/*=====  End of Create Database Table With Heidi Sql  ======*/
+
+https://github.com/gjunge/rateit.js
+use this plugin for ratting 
+
+https://codex.wordpress.org/AJAX_in_Plugins
+
+
+wp_localize_script('') // this function provvide pass transable string in to javascript file
+
+
+
+
+/*============================================
+=            SENDING AJAX REQUEST            =
+============================================*/
+in enqueue.php
+wp_register_script(
+        'r_main',
+        plugins_url('/assets/scripts/main.js',RECIPE_PLUGIN_URL),
+        array('jquery'),
+        '1.0.0',
+        true //in footer
+    );
+
+    // this function used for providing translation link to javascript file
+    wp_localize_script( 'r_main', 'recipe_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php')
+         //wp-admin/admin-ajax.php file aavailable in worpdress
+    ));
+
+    //we are passing recipe_obj to r_main file okkay iin this object we have ajax_url
+
+    
+    wp_enqueue_script('r_main');
+
+in main.js
+
+jQuery(function($){
+    $("#recipe_rating").bind("rated",function(){
+        $(this).rateit('readonly',true); // this will user not allowed to create ratting if ratting is made
+        
+        var form = {
+            action: "r_rate_recipe", 
+            /*
+            i have pass r_rate_recipe so we use in index.php action hook to check my request.
+            add_action('wp_ajax_r_rate_recipe','r_rate_recipe'); 
+            */ 
+            rid:    $(this).data('rid'), // get the id 
+            rating: $(this).rateit('value'), // get the value
+        };
+
+
+    /*
+    in plugin/recipe/includes/fron/enqueue.php
+        wp_register_script(
+        'r_main',
+        plugins_url('/assets/scripts/main.js',RECIPE_PLUGIN_URL),
+        array('jquery'),
+        '1.0.0',
+        true //in footer
+    );
+
+    // this function used for providing translation link to javascript file
+    wp_localize_script( 'r_main', 'recipe_obj', array(
+        'ajax_url' => admin_url('admin-ajax.php'); //wp-admin/admin-ajax.php file aavailable in worpdress
+    ));
+    we have pass reccipe_obj to this file
+    */
+        $.post(recipe_obj.ajax_url,form,function(data){
+            
+        });
+    })
+});
+
+sooo request is sand to admin_ajax okkay so we use admin_ajax hook with the action we provvide when we send my requesst
+
+
+
+add_action('wp_ajax_r_rate_recipe','r_rate_recipe');
+// https://codex.wordpress.org/Plugin_API/Action_Reference/wp_ajax_(action)
+add_action('wp_ajax_nopriv_r_rate_recipe','r_rate_recipe');
+//no priv function also process request when user its not login no priv stand for no privillegs
+
+in rate-recipe.php
+
+function r_rate_recipe(){
+    print_r($_POST);
+}
+
+/*=====  End of SENDING AJAX REQUEST  ======*/
+
+
+
+
+
+insert $wpdb->insert() for insert data
+3 formmats %s is string %d is integer %f is float
+
+wordpress provides a few method for excuting custom quries.the get_var() method will execute a custom quer and retun a single value from that query.
+
+the AVG() SQL funcction will average out all the values from a particular column.
+
+manage_post_type_posts_columns
+
+if we want to change the content is displaying when we recipe/index page
+https://developer.wordpress.org/reference/hooks/manage_post_type_posts_columns/
+
+
+/*==========================================================
+=            RECIPE INDEX CHANGE IN ADMIN PANEL            =
+==========================================================*/
+
+add_filter('manage_recipe_posts_columns','r_add_new_recipe_columns');
+add_action('manage_recipe_posts_custom_column','r_manage_recipe_columns',10,2);');
+
+function r_add_new_recipe_columns( $columns ){
+    $new_columns                            =   array();
+    $new_columns['cb']                      =   '<input type="checkbox" />';
+    $new_columns['title']                   =   __( 'Title', 'recipe' );
+    $new_columns['author']                  =   __( 'Author', 'recipe' );
+    $new_columns['categories']              =   __( 'Categories', 'recipe' );
+    $new_columns['count']                   =   __( 'Ratings count', 'recipe' );
+    $new_columns['rating']                  =   __( 'Average Rating', 'recipe' );
+    $new_columns['date']                    =   __( 'Date', 'recipe' );
+
+    return $new_columns;
+}
+
+function r_manage_recipe_columns($column,$post_id){
+    switch ($column) {
+        case 'count':
+            $recipe_data = get_post_meta($post_id,'recipe_data',true);
+            echo $recipe_data['rating_count'];
+            break;
+        case 'rating':
+            $recipe_data = get_post_meta($post_id,'recipe_data',true);
+            echo $recipe_data['rating'];
+            break;
+        default:
+            
+            break;
+    }
+}
+
+/*=====  End of RECIPE INDEX CHANGE IN ADMIN PANEL  ======*/
+
+
+
+widgets api
+
+
+
+
+Cron job Transients 
+for cron job in activation hook you need to usee
+wp_schedule_event( 
+        time(),
+        'daily',
+        'r_daily_recipe_hook', //it will create custom action hook now you should add add_action('r_daily_recipe_hook','callbackFunctionName');
+    );
+    then use this hook 
+
+add_action('r_daily_recipe_hook','r_generate_daily_recipe');
+
+
+function r_generate_daily_recipe(){
+    
+}
+
+for unshdule you need to use funccction in deacativation hook
+wp_clear_scheduled_hook( 'r_daily_recipe_hook' );
+
+
+tuts 048 completed
